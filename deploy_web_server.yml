@@ -1,0 +1,20 @@
+---
+- name: Deploy web server
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Start Apache service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Create a simple HTML file
+      copy:
+        content: "<html><body><h1>Welcome to your web server!</h1></body></html>"
+        dest: /var/www/html/index.html

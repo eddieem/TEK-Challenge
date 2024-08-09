@@ -112,3 +112,90 @@ Infrastructure as a Service (IaaS) is a cloud computing model that provides virt
  - **Data Protection:** Customers must ensure that their data is encrypted both at rest and in transit to protect against unauthorized access.
  - **Access Control:** Implementing strong access control measures, such as multi-factor authentication (MFA) and least privilege principles, is crucial to prevent unauthorized access to resources.
 # **Part 3. CI/CD Pipeline Setup**
+## Configuration Management with Ansible
+### Ansible Playbook to Automate Web Server Deployment
+Here’s an Ansible playbook to deploy an Nginx web server on a virtual machine:
+
+	---
+	- name: Deploy Nginx web server
+	  hosts: webservers
+	  become: yes
+	
+	  tasks:
+	    - name: Ensure Nginx is installed
+	      apt:
+	        name: nginx
+	        state: present
+	        update_cache: yes
+	
+	    - name: Ensure Nginx is running
+	      service:
+	        name: nginx
+	        state: started
+	        enabled: yes
+	
+	    - name: Copy index.html to web server
+	      copy:
+	        src: /path/to/your/index.html
+	        dest: /var/www/html/index.html
+## CI/CD piplibe Configurations w/ Jenkins Pipeline Configuration (Jenkinsfile)
+The inluded `Jenkinsfile` contains stages for building, testing, deploying a sample application to Azure, and performing security scanning:
+
+pipeline {
+    agent any
+
+    environment {
+        AZURE_CREDENTIALS = credentials('azure-credentials-id')
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the application...'
+                // Add your build steps here
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                // Add your test steps here
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Performing security scan...'
+                // Example using a security scanning tool like OWASP ZAP
+                sh 'zap-cli quick-scan http://your-application-url'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying to Azure...'
+                withCredentials([azureServicePrincipal(
+                    credentialsId: 'azure-credentials-id',
+                    subscriptionIdVariable: 'AZURE_SUBSCRIPTION_ID',
+                    clientIdVariable: 'AZURE_CLIENT_ID',
+                    clientSecretVariable: 'AZURE_CLIENT_SECRET',
+                    tenantIdVariable: 'AZURE_TENANT_ID'
+                )]) {
+                    sh '''
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+                    az webapp deployment source config-zip --resource-group your-resource-group --name your-app-name --src your-app.zip
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up...'
+            // Add any cleanup steps here
+        }
+    }
+}
+
+This Jenkinsfile includes stages for building, testing, performing a security scan using OWASP ZAP, and deploying the application to Azure. Make sure to replace placeholders like `your-application-url`, `your-resource-group`, `your-app-name`, and `your-app.zip` with your actual values.

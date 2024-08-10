@@ -141,7 +141,7 @@ Here’s an Ansible playbook to deploy an Nginx web server on a virtual machine:
 ## CI/CD piplibe Configurations w/ Jenkins Pipeline Configuration (Jenkinsfile)
 The inluded `Jenkinsfile` contains stages for building, testing, deploying a sample application to Azure, and performing security scanning:
 
-pipeline {
+	pipeline {
     agent any
 
     environment {

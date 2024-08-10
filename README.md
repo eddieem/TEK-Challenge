@@ -195,7 +195,7 @@ The inluded `Jenkinsfile` contains stages for building, testing, deploying a sam
             echo 'Cleaning up...'
             // Add any cleanup steps here
         }
-    }
+     }
 	}
 
 This Jenkinsfile includes stages for building, testing, performing a security scan using OWASP ZAP, and deploying the application to Azure. Make sure to replace placeholders like `your-application-url`, `your-resource-group`, `your-app-name`, and `your-app.zip` with your actual values.
